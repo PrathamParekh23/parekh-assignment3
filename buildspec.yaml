@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 051826729213.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t 051826729213.dkr.ecr.us-east-1.amazonaws.com/parekh-ecr:parekh-latest .
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push 051826729213.dkr.ecr.us-east-1.amazonaws.com/parekh-ecr:parekh-latest
+      - echo Running container security scan...
+      - aws ecr start-image-scan --repository-name parekh-ecr --image-id imageTag=parekh-latest
